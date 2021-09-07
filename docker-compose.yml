@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  sonar:
+    image: sonarqube:8.9.2-community
+    container_name: sonar
+    ports:
+      - "9000:9000"
+    volumes:
+      - .:/opt/sonarqube/code
+    networks: 
+      - bridge-network
+
+  scanner:
+    build: .
+    container_name: sonar-scanner
+    volumes: 
+      - ./:/code
+      - ./sonar-scanner.properties:/opt/sonar-scanner-4.6.2.2472/conf/sonar-scanner.properties
+    links: 
+      - sonar
+    depends_on:
+      - sonar
+    networks: 
+      - bridge-network
+    tty: true 
+
+networks: 
+  no-internet:
+    driver: bridge
+    internal: true
+  bridge-network:
+    driver: bridge
